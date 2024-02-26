@@ -1,44 +1,32 @@
-# Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
-
-on:
+name: Build and Deploy
+on: 
   push:
-    branches: ['deploy']
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: 'pages'
-  cancel-in-progress: true
+    branches: [ deploy ]
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Set up Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: 'npm'
-      - name: Install dependencies
-        run: npm install
-      - name: Build
-        run: npm run build
-      - name: Setup Pages
-        uses: actions/configure-pages@v3
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
-        with:
-          # Upload dist repository
-          path: './dist'
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2
+    
+    # Checkout code
+    - name: checkout 
+      uses: actions/checkout@v3
+
+    - name: setup 
+      uses: actions/setup-node@v3
+      with:
+        node-version: 20
+
+    # Install and build
+    - name: Install and Build
+      run: |
+        npm install
+        npm run build
+
+    # Deploy to server  
+    - name: Deploy
+      uses: JamesIves/github-pages-deploy-action@v2
+      with:
+        branch: gh-pages
+        # 打包後創建的資料夾名稱
+        folder: dist
